@@ -55,7 +55,7 @@ public class Main implements Runnable {
 		
 		game = new Game(width, height);
 		
-		int[] structure = {9, 9, 9, 9};
+		int[] structure = {9, 9, 9};
 		
 		blackAI = new DeepQLearner(game, structure, 0.01d, 0.95d, 1, -1);
 		whiteAI = new DeepQLearner(game, structure, 0.01d, 0.95d, 1, 1);
@@ -65,7 +65,7 @@ public class Main implements Runnable {
 		running = true;
 		init();
 		
-		int fps = 1000;
+		int fps = 10000;
 		double timeperTick = 1000000000/fps;
 		double delta = 0;
 		long now;
@@ -88,8 +88,8 @@ public class Main implements Runnable {
 			}
 			if(timer >= 1000000000) {
 				System.out.println("[Main]\t\t" + ticks + " fps");
-				if(fps > 1) fps-=10;
-				if(fps <= 0) fps = 1;
+				if(fps > 5) fps-=100;
+				if(fps <= 0) fps = 5;
 				timeperTick = 1000000000/fps;
 				ticks = 0;
 				timer = 0;
