@@ -73,21 +73,33 @@ public class Matrix {
 
 	public static Matrix transpose(Matrix m) {
 		Matrix mt = new Matrix(m.getH(), m.getW());
-		for(int i = 0;i < m.getMatrix().length;i++) mt.setArrayValue((i % m.getW())*2+(int)(i/m.getW()), m.getArrayValue(i));
+		for(int i = 0;i < m.getMatrix().length;i++) mt.setArrayValue((i % m.getW())*m.getH()+(int)(i/m.getW()), m.getArrayValue(i));
 		return mt;
 	}
 	
 	public static Matrix add(Matrix m1, Matrix m2) {
-		if(m1.getW() != m2.getW()) System.out.println("m1 width is not the same as m2 width");
-		if(m1.getH() != m2.getH()) System.out.println("m1 height is not the same as m2 height");
+		if(m1.getW() != m2.getW()) {
+			System.out.println("m1 width is not the same as m2 width");
+			new Throwable().printStackTrace();
+		}
+		if(m1.getH() != m2.getH()) {
+			System.out.println("m1 height is not the same as m2 height");
+			new Throwable().printStackTrace();
+		}
 		Matrix out = new Matrix(m1.getW(), m1.getH());
 		for(int i = 0;i < out.getMatrix().length;i++) out.setArrayValue(i, m1.getArrayValue(i)+m2.getArrayValue(i));
 		return out;
 	}
 	
 	public static Matrix sub(Matrix m1, Matrix m2) {
-		if(m1.getW() != m2.getW()) System.out.println("m1 width is not the same as m2 width");
-		if(m1.getH() != m2.getH()) System.out.println("m1 height is not the same as m2 height");
+		if(m1.getW() != m2.getW()) {
+			System.out.println("m1 width is not the same as m2 width");
+			new Throwable().printStackTrace();
+		}
+		if(m1.getH() != m2.getH()) {
+			System.out.println("m1 height is not the same as m2 height");
+			new Throwable().printStackTrace();
+		}
 		Matrix out = new Matrix(m1.getW(), m1.getH());
 		for(int i = 0;i < out.getMatrix().length;i++) out.setArrayValue(i, m1.getArrayValue(i)-m2.getArrayValue(i));
 		return out;
@@ -100,7 +112,10 @@ public class Matrix {
 	}
 	
 	public static Matrix matrixProduct(Matrix m1, Matrix m2) {
-		if(m1.getW() != m2.getH()) System.out.println("m1 width is not the same as m2 height");
+		if(m1.getW() != m2.getH()) {
+			System.out.println("m1 width is not the same as m2 height");
+			new Throwable().printStackTrace();
+		}
 		Matrix out = new Matrix(m2.getW(), m1.getH());
 		for(int i = 0;i < out.getMatrix().length;i++) {
 			for(int j = 0;j < m1.getW();j++) {
@@ -111,8 +126,14 @@ public class Matrix {
 	}
 	
 	public static Matrix hadamardProduct(Matrix m1, Matrix m2) {
-		if(m1.getW() != m2.getW()) System.out.println("m1 width is not the same as m2 width");
-		if(m1.getH() != m2.getH()) System.out.println("m1 height is not the same as m2 height");
+		if(m1.getW() != m2.getW()) {
+			System.out.println("m1 width is not the same as m2 width");
+			new Throwable().printStackTrace();
+		}
+		if(m1.getH() != m2.getH()) {
+			System.out.println("m1 height is not the same as m2 height");
+			new Throwable().printStackTrace();
+		}
 		Matrix out = new Matrix(m1.getW(), m1.getH());
 		for(int i = 0;i < out.getMatrix().length;i++) out.setArrayValue(i, m1.getArrayValue(i)*m2.getArrayValue(i));
 		return out;
@@ -121,7 +142,7 @@ public class Matrix {
 	public static Matrix fromArray(double[] arr) {
 		Matrix out = new Matrix(arr.length, 1);
 		for(int i = 0;i < out.getMatrix().length;i++) out.setArrayValue(i, arr[i]);
-	    return out;
+	    return Matrix.transpose(out);
 	}
 	
 }

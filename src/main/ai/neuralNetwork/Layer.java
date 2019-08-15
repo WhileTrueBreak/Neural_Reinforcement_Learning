@@ -12,9 +12,9 @@ public class Layer {
 	public Layer(int in, int out){
 		this.nodeNum = out;
 
-		weights = new Matrix(out, in);
-		bias = new Matrix(out, 1);
-
+		weights = new Matrix(in, out);
+		bias = new Matrix(1, out);
+		
 		weights.randomiseMatrix(-1, 1);
 		bias.randomiseMatrix(-1, 1);
 	}
@@ -22,7 +22,6 @@ public class Layer {
 	public Matrix feedForward(Matrix in){
 		//calc node
 		nodes = Matrix.matrixProduct(weights, in);
-		nodes = Matrix.add(nodes, bias);
 		nodes.applyFunc(new Activation() {public double function(double n) {return (float)(1/( 1 + Math.pow(Math.E,(-1*n))));}});
 		return nodes;
 	}
