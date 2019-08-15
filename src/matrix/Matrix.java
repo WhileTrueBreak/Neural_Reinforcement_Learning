@@ -19,6 +19,10 @@ public class Matrix {
 		}
 	}
 	
+	public void applyFunc(Activation func) {
+		for(int i = 0;i < matrix.length;i++) matrix[i] = func.function(matrix[i]);
+	}
+	
 	public void setMatrixValue(int x, int y, double value) {
 		if(x < 0) System.out.println("x is smaller than 0");
 		if(y < 0) System.out.println("y is smaller than 0");
@@ -47,6 +51,10 @@ public class Matrix {
 		Matrix m = new Matrix(w, h);
 		for(int i = 0;i < matrix.length;i++) m.setArrayValue(i, matrix[i]);
 		return m;
+	}
+	
+	public double[] toArray() {
+		return Matrix.transpose(this).getMatrix();
 	}
 
 	public double[] getMatrix() {
@@ -100,6 +108,20 @@ public class Matrix {
 			}
 		}
 		return out;
+	}
+	
+	public static Matrix hadamardProduct(Matrix m1, Matrix m2) {
+		if(m1.getW() != m2.getW()) System.out.println("m1 width is not the same as m2 width");
+		if(m1.getH() != m2.getH()) System.out.println("m1 height is not the same as m2 height");
+		Matrix out = new Matrix(m1.getW(), m1.getH());
+		for(int i = 0;i < out.getMatrix().length;i++) out.setArrayValue(i, m1.getArrayValue(i)*m2.getArrayValue(i));
+		return out;
+	}
+	
+	public static Matrix fromArray(double[] arr) {
+		Matrix out = new Matrix(arr.length, 1);
+		for(int i = 0;i < out.getMatrix().length;i++) out.setArrayValue(i, arr[i]);
+	    return out;
 	}
 	
 }
