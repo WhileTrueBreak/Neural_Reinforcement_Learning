@@ -22,7 +22,7 @@ public class Layer {
 	public Matrix feedForward(Matrix in){
 		//calc node
 		nodes = Matrix.matrixProduct(weights, in);
-		nodes.applyFunc(new Activation() {public double function(double n) {return (float)(1/( 1 + Math.pow(Math.E,(-1*n))));}});
+		nodes.applyFunc(new Activation() {public double function(double n) {return (float)(1/( 1 + Math.pow(Math.E,(-1*n))))*2-1;}});
 		return nodes;
 	}
 
@@ -31,7 +31,7 @@ public class Layer {
 		Matrix weights_t = Matrix.transpose(weights);
 		Matrix next_err = Matrix.matrixProduct(weights_t, error);
 		//calc gradient
-		nodes.applyFunc(new Activation() {public double function(double n) {return n*(1-n);}});
+		nodes.applyFunc(new Activation() {public double function(double n) {return ((n+1)/2)*(1-((n+1)/2));}});
 		nodes = Matrix.hadamardProduct(nodes, error);
 		nodes = Matrix.scalarProduct(nodes, learningRate);
 		//update bias

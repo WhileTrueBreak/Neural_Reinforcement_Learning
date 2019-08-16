@@ -34,6 +34,7 @@ public class Main implements Runnable {
 	
 	//timer
 	private int renderTimer = 4;
+	private int counter = 1;
 	
 	public Main(String title, int width, int height) {
 		this.title = title;
@@ -84,12 +85,14 @@ public class Main implements Runnable {
 				ticks++;
 				delta--;
 				if(delta > 1)
-					delta--;
+					delta = 0;
 			}
 			if(timer >= 1000000000) {
-				System.out.println("[Main]\t\t" + ticks + " fps");
-				if(fps > 5) fps-=100;
-				if(fps <= 0) fps = 5;
+//				System.out.println("[Main]\t\t" + ticks + " current fps");
+//				System.out.println("[Main]\t\t" + fps + " set fps");
+//				System.out.println("[Main]\t\t" + counter + " seconds");
+				if(counter <= 0) fps = 1;
+				else counter--;
 				timeperTick = 1000000000/fps;
 				ticks = 0;
 				timer = 0;
@@ -133,10 +136,10 @@ public class Main implements Runnable {
 			renderTimer--;
 		}
 		if(renderTimer <= 0) {
-			blackAI.train(game.hasWon()*-1);
-			whiteAI.train(game.hasWon());
+			//blackAI.train(game.hasWon()*-1);
+			//whiteAI.train(game.hasWon());
 			game.reset();
-			renderTimer = 4;
+			renderTimer = 2;
 		}
 	}
 	
