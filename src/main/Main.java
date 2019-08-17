@@ -34,7 +34,7 @@ public class Main implements Runnable {
 	
 	//timer
 	private int renderTimer = 4;
-	private int counter = 1;
+	private int counter = 10;
 	
 	public Main(String title, int width, int height) {
 		this.title = title;
@@ -59,7 +59,7 @@ public class Main implements Runnable {
 		int[] structure = {9, 9, 9};
 		
 		blackAI = new DeepQLearner(game, structure, 0.01d, 0.95d, 1, -1);
-		whiteAI = new DeepQLearner(game, structure, 0.01d, 0.95d, 1, 1);
+		whiteAI = new DeepQLearner(game, structure, 0.01d, 0.95d, 0, 1);
 	}
 
 	public void run() {
@@ -88,9 +88,9 @@ public class Main implements Runnable {
 					delta = 0;
 			}
 			if(timer >= 1000000000) {
-//				System.out.println("[Main]\t\t" + ticks + " current fps");
-//				System.out.println("[Main]\t\t" + fps + " set fps");
-//				System.out.println("[Main]\t\t" + counter + " seconds");
+				System.out.println("[Main]\t\t" + ticks + " current fps");
+				System.out.println("[Main]\t\t" + fps + " set fps");
+				System.out.println("[Main]\t\t" + counter + " seconds");
 				if(counter <= 0) fps = 1;
 				else counter--;
 				timeperTick = 1000000000/fps;
@@ -124,23 +124,21 @@ public class Main implements Runnable {
 		}
 	}
 	
+	private void observe() {
+		while(game.getActions().size() != 0 && game.hasWon() == 0) {
+			if(game.getTurn() == 1) {
+				whiteAI.makeMove();
+			}else {
+				blackAI.makeMove();
+			}
+		}
+	}
 
 	private void update() {
-		if(game.getActions().size()!=0 && game.hasWon() == 0) {
-			if(game.getTurn()==-1) {
-				blackAI.makeMove(game.getActions());
-			}else if(game.getTurn()==1) {
-				whiteAI.makeMove(game.getActions());
-			}
-		}else {
-			renderTimer--;
-		}
-		if(renderTimer <= 0) {
-			//blackAI.train(game.hasWon()*-1);
-			//whiteAI.train(game.hasWon());
-			game.reset();
-			renderTimer = 2;
-		}
+		game.reset();
+		observe();
+		whiteAI.learn();
+		blackAI.learn();
 	}
 	
 	private void render() {

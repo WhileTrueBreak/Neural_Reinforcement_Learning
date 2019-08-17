@@ -12,8 +12,8 @@ public class Layer {
 	public Layer(int in, int out){
 		this.nodeNum = out;
 
-		weights = new Matrix(in, out);
-		bias = new Matrix(1, out);
+		weights = new Matrix(out, in);
+		bias = new Matrix(out, 1);
 		
 		weights.randomiseMatrix(-1, 1);
 		bias.randomiseMatrix(-1, 1);

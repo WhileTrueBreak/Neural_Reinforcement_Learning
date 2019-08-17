@@ -7,19 +7,20 @@ import main.ai.neuralNetwork.NeuralNetwork;
 import main.game.Game;
 
 public class DeepQLearner {
-	
+
 	private ArrayList<double[]> stateMemory;
 	private ArrayList<int[]> actionMemory;
-	
+	private ArrayList<Double> rewardMemory;
+
 	private double learningRate, discount;
-	private double explorationRate, exploration_delta = 0.001;
-	
+	private double explorationRate;
+
 	private int side;
-	
+
 	private NeuralNetwork neuralNetwork;
-	
+
 	private Game game;
-	
+
 	public DeepQLearner(Game game, int[] struct, double learningRate, double discount, double explorationRate, int side) {
 		this.game = game;
 		neuralNetwork = new NeuralNetwork(struct);
@@ -27,57 +28,55 @@ public class DeepQLearner {
 		this.discount = discount;
 		this.explorationRate = explorationRate;
 		this.side = side;
-		
+
 		stateMemory = new ArrayList<double[]>();
 		actionMemory = new ArrayList<int[]>();
+		rewardMemory = new ArrayList<Double>();
 	}
-	
-	private double getQ(double[] state, int[] action) {
-		double[] Qs = neuralNetwork.feedForward(state);
-		return Qs[action[0]];
-	}
-	
-	private int[] getNextAction(ArrayList<int[]> actions) {
-		if(Math.random() < explorationRate) {
-			return actions.get(new Random().nextInt(actions.size()));
-		}else {
-			return bestAction(actions);
-		}
-	}
-	
-	private int[] bestAction(ArrayList<int[]> actions) {
-		double[] input = new double[game.getBoard().length];
-		for(int i = 0;i < input.length;i++) input[i] = game.getBoard()[i]*side;
-		double[] ranking = neuralNetwork.feedForward(input);
-		System.out.print("NN output [");
-		for(int i = 0;i < ranking.length;i++) {
-			System.out.print((Math.round(ranking[i]*100.0)/100.0) + " ");
-		}
-		System.out.println("]");
-		int[] bestAction = new int[1];
-		double highest = Double.NEGATIVE_INFINITY;
-		for(int i = 0;i < ranking.length;i++) {
-			boolean isValid = false;
-			for(int[] act:actions) if(act[0]==i) isValid = true;
-			if(ranking[i] > highest && isValid) {
-				bestAction[0] = i;
-				highest = ranking[i];
-			}
-		}
-		return bestAction;
-	}
-	
-	public void makeMove(ArrayList<int[]> actions) {
-		int[] action = getNextAction(actions);
-		double[] state = new double[9];
+
+	public void makeMove() {
+		int[] action = new int[1];
+		double[] state = new double[game.getBoard().length];
 		for(int i = 0;i < state.length;i++) state[i] = game.getBoard()[i];
-		stateMemory.add(state);
+		if(Math.random() < explorationRate) {
+			action = game.getActions().get((int) Math.floor(Math.random()*game.getActions().size()));
+		}else {
+			double[] Q = neuralNetwork.feedForward(state);
+			int highestQIndex = -1;
+			double currentHighest = Double.NEGATIVE_INFINITY;
+			for(int i = 0;i < Q.length;i++) {
+				boolean valid = false;
+				for(int[] a:game.getActions()) if(a[0] == i) valid = true;
+				if(Q[i] > currentHighest && valid) {
+					currentHighest = Q[i];
+					highestQIndex = i;
+				}
+			}
+			action[0] = highestQIndex;
+		}
 		game.makeMove(action[0]);
+		stateMemory.add(state);
 		actionMemory.add(action);
-		double[] expectedOut = new double[9];
-		expectedOut[action[0]] = -1;
-		neuralNetwork.train(state, expectedOut, learningRate);
+		if(game.hasWon() != 0) {
+			rewardMemory.add((double) (game.hasWon()*side));
+		}else {
+			rewardMemory.add(-0.01d);
+		}
 	}
 	
-	
+	public void learn() {
+		for(int i = 0;i < stateMemory.size();i++) {
+			double Rd = 0;
+			for(int j = 0;j < rewardMemory.size()-i;j++) Rd += rewardMemory.get(j+i)*Math.pow(discount, j);
+			double[] action = new double[9];
+			if(i == stateMemory.size()-1) action[actionMemory.get(i)[0]] = rewardMemory.get(i);
+			else action[actionMemory.get(i)[0]] = Rd;
+			neuralNetwork.train(action, action, learningRate);
+		}
+	}
+
+	public double[] getQs(double[] state) {
+		return neuralNetwork.feedForward(state);
+	}
+
 }
